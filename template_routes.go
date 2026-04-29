@@ -16,6 +16,7 @@ import (
 
 type RoutesReceiver interface {
 	Count() int64
+	Index() int64
 }
 
 func TemplateRoutes(mux *http.ServeMux, receiver RoutesReceiver) TemplateRoutePaths {
@@ -41,10 +42,13 @@ func TemplateRoutes(mux *http.ServeMux, receiver RoutesReceiver) TemplateRoutePa
 		_, _ = buf.WriteTo(response)
 	})
 	mux.HandleFunc("GET /{$}", func(response http.ResponseWriter, request *http.Request) {
-		var td = TemplateData[RoutesReceiver, struct {
-		}]{receiver: receiver, response: response, request: request, pathsPrefix: pathsPrefix}
+		var td = TemplateData[RoutesReceiver, int64]{receiver: receiver, response: response, request: request, pathsPrefix: pathsPrefix}
+		if len(td.errList) == 0 {
+			td.result = receiver.Index()
+			td.okay = true
+		}
 		buf := bytes.NewBuffer(nil)
-		if err := templates.ExecuteTemplate(buf, "GET /{$}", &td); err != nil {
+		if err := templates.ExecuteTemplate(buf, "GET /{$} Index()", &td); err != nil {
 			slog.ErrorContext(request.Context(), "failed to render page", slog.String("path", request.URL.Path), slog.String("pattern", request.Pattern), slog.String("error", err.Error()))
 			http.Error(response, "failed to render page", http.StatusInternalServerError)
 			return
@@ -148,6 +152,6 @@ func (routePaths TemplateRoutePaths) Count() string {
 	return path.Join(cmp.Or(routePaths.pathsPrefix, "/"), "count")
 }
 
-func (routePaths TemplateRoutePaths) ReadIndex() string {
+func (routePaths TemplateRoutePaths) Index() string {
 	return "/"
 }

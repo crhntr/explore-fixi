@@ -31,15 +31,19 @@ func (s *Server) Count() int64 {
 	return n
 }
 
+func (s *Server) Index() int64 {
+	return atomic.LoadInt64(&s.count)
+}
+
 func main() {
 	mux := http.NewServeMux()
 	s := new(Server)
-	updates := make(chan int64)
+	updates := make(chan int64, 5)
 	s.updates = updates
 	bc := broadcast.New(updates)
 	TemplateRoutes(mux, s)
 
-	mux.HandleFunc("GET /feed", func(res http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("GET /updates", func(res http.ResponseWriter, req *http.Request) {
 		c, closeSub := bc.SubscribeAll(5)
 		defer closeSub()
 		src, ok := sse.New(res, req, http.StatusOK)
@@ -51,12 +55,12 @@ func main() {
 		buf := bytes.NewBuffer(nil)
 		for update := range c {
 			buf.Reset()
-			if err := templates.ExecuteTemplate(buf, "history-entree", update); err != nil {
-				log.Println("execute history-entree error", err)
+			if err := templates.ExecuteTemplate(buf, "hello", update); err != nil {
+				log.Println("execute template error", err)
 				continue
 			}
 			if err := src.Message(buf.Bytes()); err != nil {
-				log.Println("failed to send message", err)
+				log.Println("sse send error", err)
 				continue
 			}
 		}
@@ -64,10 +68,7 @@ func main() {
 
 	addr := cmp.Or(os.Getenv("HTTP_ADDR"), ":"+cmp.Or(os.Getenv("PORT"), "8080"))
 	log.Println("Starting http server", addr)
-	if err := http.ListenAndServe(addr, http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		log.Println("Received request", req.Method, req.URL.Path)
-		mux.ServeHTTP(res, req)
-	})); err != nil {
+	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalln(err)
 	}
 }
