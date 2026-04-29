@@ -36,12 +36,10 @@ func (s *Server) Count() int64 {
 	return n
 }
 
-func (s *Server) Index() int64 {
-	return atomic.LoadInt64(&s.count)
-}
+func (s *Server) Index() int64 { return atomic.LoadInt64(&s.count) }
 
 func (s *Server) Updates(res http.ResponseWriter, req *http.Request) {
-	c, closeSub := s.countCoordinator.SubscribeAll(1)
+	c, closeSub := s.countCoordinator.SubscribeLatest(1)
 	defer closeSub()
 	src, ok := sse.New(res, req, http.StatusOK)
 	if !ok {
@@ -54,13 +52,14 @@ func (s *Server) Updates(res http.ResponseWriter, req *http.Request) {
 		buf.Reset()
 		if err := templates.ExecuteTemplate(buf, "hello", update); err != nil {
 			s.logger.Println("execute template error", err)
-			continue
+			break
 		}
 		if err := src.Message(buf.Bytes()); err != nil {
 			s.logger.Println("sse send error", err)
-			continue
+			break
 		}
 	}
+	_ = src.Message([]byte("stream closed"), sse.WithEvent("close"))
 }
 
 func (s *Server) routes() http.Handler {
@@ -69,6 +68,8 @@ func (s *Server) routes() http.Handler {
 	mux.HandleFunc("GET /updates", s.Updates)
 	return mux
 }
+
+func (TemplateRoutePaths) Updates() string { return "/updates" }
 
 func addr() string { return cmp.Or(os.Getenv("HTTP_ADDR"), ":"+cmp.Or(os.Getenv("PORT"), "8080")) }
 
