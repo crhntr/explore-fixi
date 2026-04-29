@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"cmp"
-	"io"
+	"embed"
 	"log"
 	"net/http"
 	"os"
@@ -11,35 +10,27 @@ import (
 	"text/template"
 )
 
-var count int64
+//go:embed *.gohtml
+var templateFiles embed.FS
+
+//go:generate go tool muxt generate --use-receiver-type=Server
+var templates = template.Must(template.ParseFS(templateFiles, "*"))
+
+type Server struct {
+	count int64
+}
+
+func (s *Server) Count() int64 {
+	return atomic.AddInt64(&s.count, 1)
+}
 
 func main() {
 	mux := http.NewServeMux()
-	mux.Handle("GET /{$}", http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		renderTemplate(res, "index.gohtml", struct{}{}, "index.gohtml")
-	}))
-	mux.Handle("GET /example", http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		n := atomic.AddInt64(&count, 1)
-		renderTemplate(res, "example", n, "index.gohtml")
-	}))
+	s := new(Server)
+	TemplateRoutes(mux, s)
 	addr := cmp.Or(os.Getenv("HTTP_ADDR"), ":"+cmp.Or(os.Getenv("PORT"), "8080"))
 	log.Println("Starting http server", addr)
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalln(err)
 	}
-}
-
-func renderTemplate(res http.ResponseWriter, name string, data any, templateFiles ...string) {
-	templates, err := template.ParseFiles(templateFiles...)
-	if err != nil {
-		http.Error(res, "internal server error", http.StatusInternalServerError)
-		return
-	}
-	var buf bytes.Buffer
-	if err := templates.ExecuteTemplate(&buf, name, data); err != nil {
-		http.Error(res, "internal server error", http.StatusInternalServerError)
-		return
-	}
-	res.WriteHeader(http.StatusOK)
-	_, _ = io.Copy(res, &buf)
 }

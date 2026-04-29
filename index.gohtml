@@ -8,7 +8,7 @@
 </head>
 <body>
 	<button
-					fx-action='/example'
+					fx-action='{{.Path.Count}}'
 					fx-target='#greeting'
 					fx-swap='innerHTML'
 	>Click Me</button>
@@ -16,4 +16,6 @@
 </body>
 </html>
 
-{{define "example" -}}Hello, world! n={{.}}{{- end}}
+{{define "GET /count Count()" -}}Hello, world! n={{.Result}}{{- end}}
+
+{{define "GET /{$}" -}}{{template "index.gohtml" .}}{{- end}}
