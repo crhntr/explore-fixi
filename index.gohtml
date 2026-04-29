@@ -13,8 +13,11 @@
 					fx-swap='innerHTML'
 	>Click Me</button>
 	<p id='greeting'>Hello!</p>
+	<ul fx-trigger="fx:inited" fx-action="/feed" fx-swap="beforeend"></ul>
 </body>
 </html>
+
+{{define "history-entree" -}}<li>{{.}}</li>{{end}}
 
 {{define "GET /count Count()" -}}Hello, world! n={{.Result}}{{- end}}
 

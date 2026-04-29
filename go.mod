@@ -5,6 +5,11 @@ go 1.26
 tool github.com/typelate/muxt
 
 require (
+	github.com/crhntr/channels v0.2.0
+	github.com/typelate/sse v0.0.1
+)
+
+require (
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/ettle/strcase v0.2.0 // indirect
