@@ -7,8 +7,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync/atomic"
 	"text/template"
 )
+
+var count int64
 
 func main() {
 	mux := http.NewServeMux()
@@ -16,7 +19,8 @@ func main() {
 		renderTemplate(res, "index.gohtml", struct{}{}, "index.gohtml")
 	}))
 	mux.Handle("GET /example", http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		renderTemplate(res, "example", struct{}{}, "index.gohtml")
+		n := atomic.AddInt64(&count, 1)
+		renderTemplate(res, "example", n, "index.gohtml")
 	}))
 	addr := cmp.Or(os.Getenv("HTTP_ADDR"), ":"+cmp.Or(os.Getenv("PORT"), "8080"))
 	log.Println("Starting http server", addr)

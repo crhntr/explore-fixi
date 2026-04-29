@@ -7,9 +7,13 @@
 	<script src="https://cdn.jsdelivr.net/npm/the-fixi-project@0.1.1/dist/the-fixi-project.min.js" integrity="sha256-aQhU79uUGCZTYXEtsijzqKVynikd1uZqOfGAovLVYOU=" crossorigin="anonymous"></script>
 </head>
 <body>
-	<button fx-action='/example'>Click Me</button>
+	<button
+					fx-action='/example'
+					fx-target='#greeting'
+					fx-swap='innerHTML'
+	>Click Me</button>
+	<p id='greeting'>Hello!</p>
 </body>
 </html>
-{{define "example"}}
-	<p>Hello!!!</p>
-{{end}}
+
+{{define "example" -}}Hello, world! n={{.}}{{- end}}
