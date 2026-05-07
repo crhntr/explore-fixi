@@ -19,6 +19,9 @@ import (
 	"github.com/typelate/sse"
 )
 
+//go:embed static
+var static embed.FS
+
 //go:embed *.gohtml
 var templateFiles embed.FS
 
@@ -31,6 +34,14 @@ type Server struct {
 	countCoordinator *broadcast.Coordinator[int64]
 	logger           *slog.Logger
 	stat             statistics
+}
+
+func (s *Server) routes() http.Handler {
+	mux := http.NewServeMux()
+	TemplateRoutes(mux, s)
+	mux.HandleFunc("GET /updates", s.Updates)
+	mux.Handle("/static/", http.FileServerFS(static))
+	return mux
 }
 
 func (s *Server) Increment() int64 {
@@ -105,13 +116,6 @@ func (s *Server) sendCount(ctx context.Context, rLogger *slog.Logger, src *sse.R
 		rLogger.DebugContext(ctx, "sse send error", err)
 		return
 	}
-}
-
-func (s *Server) routes() http.Handler {
-	mux := http.NewServeMux()
-	TemplateRoutes(mux, s)
-	mux.HandleFunc("GET /updates", s.Updates)
-	return mux
 }
 
 func (TemplateRoutePaths) Updates() string { return "/updates" }
