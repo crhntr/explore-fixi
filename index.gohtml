@@ -5,15 +5,41 @@
 	<title>Explore Fixi</title>
 	<meta name="description" content="Exploring using Fixi with Go">
 	<script src="https://cdn.jsdelivr.net/npm/the-fixi-project@0.1.1/dist/the-fixi-project.min.js" integrity="sha256-aQhU79uUGCZTYXEtsijzqKVynikd1uZqOfGAovLVYOU=" crossorigin="anonymous"></script>
+	<style>
+	  .no-select, button {
+			-webkit-user-select: none; /* Safari */
+			-ms-user-select: none;     /* IE 10 and IE 11 */
+			user-select: none;         /* Standard syntax */
+	  }
+	</style>
 </head>
 <body>
-	<button fx-action='{{.Path.Count}}' fx-target='#greeting' fx-swap='innerHTML'>Increment</button>
-	<p id='greeting' fx-action='{{.Path.Updates}}' fx-trigger='fx:inited' fx-swap='innerHTML'>{{template "hello" .Result}}</p>
+	<button fx-action='{{.Path.Increment}}' fx-target='#count' fx-swap='innerHTML'>Increment</button>
+	<p id='count' fx-action='{{.Path.Updates}}' fx-trigger='fx:inited' fx-swap='innerHTML'>{{template "count-text" .Result}}</p>
+	<p id='tick'></p>
+	<script defer>
+      document.addEventListener('fx:config', (event) => {
+          event.detail.cfg.sseReconnect = true;
+          event.detail.cfg.ssePauseOnHidden = true;
+      });
+      let countEl = document.getElementById('count')
+      if (countEl) {
+      } else {
+          countEl = document.querySelector('#count')
+      }
+      countEl.addEventListener('fx:sse:error', (event) => {
+          console.log(event)
+		      document.getElementById('tick').innerHTML = ''
+      });
+      countEl.addEventListener('fx:sse:close', (event) => {
+          document.getElementById('tick').innerHTML = ''
+      });
+	</script>
 </body>
 </html>
 
-{{define "hello"}}{{.}}{{end}}
+{{define "count-text"}}{{.}}{{end}}
 
-{{define "GET /count Count()"}}{{template "hello" .Result}}{{end}}
+{{define "GET /increment Increment()"}}{{template "count-text" .Result}}{{end}}
 
 {{define "GET /{$} Index()"}}{{template "index.gohtml" .}}{{end}}
