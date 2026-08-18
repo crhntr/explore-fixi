@@ -88,7 +88,7 @@ func (s *Server) Updates(res http.ResponseWriter, req *http.Request) {
 		case <-ticker.C:
 			rLogger.DebugContext(ctx, "send tick")
 			if err := src.Message([]byte(time.Now().String()), sse.WithEvent(`{"target": "#tick", "swap": "innerHTML"}`)); err != nil {
-				rLogger.DebugContext(ctx, "sse send error", err)
+				rLogger.DebugContext(ctx, "sse send error", slog.String("err", err.Error()))
 				return
 			}
 		case <-ctx.Done():
@@ -109,11 +109,11 @@ func (s *Server) sendCount(ctx context.Context, rLogger *slog.Logger, src *sse.R
 	defer buf.Reset()
 	rLogger.DebugContext(ctx, "send count update", slog.Int64("count", update), slog.Int64("event", eventID))
 	if err := templates.ExecuteTemplate(buf, "count-text", update); err != nil {
-		rLogger.DebugContext(ctx, "execute template error", err)
+		rLogger.DebugContext(ctx, "execute template error", slog.String("err", err.Error()))
 		return
 	}
 	if err := src.Message(buf.Bytes(), sse.WithRetry(time.Second), sse.WithID(strconv.FormatInt(eventID, 16))); err != nil {
-		rLogger.DebugContext(ctx, "sse send error", err)
+		rLogger.DebugContext(ctx, "sse send error", slog.String("err", err.Error()))
 		return
 	}
 }
@@ -146,7 +146,7 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		if err := srv.Shutdown(ctx); err != nil {
-			s.logger.Info("server shutdown error", err)
+			s.logger.Info("server shutdown error", slog.String("err", err.Error()))
 		}
 	}()
 	if err := srv.ListenAndServe(); err != nil {
