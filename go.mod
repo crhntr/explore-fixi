@@ -5,7 +5,7 @@ go 1.26
 tool github.com/typelate/muxt
 
 require (
-	github.com/crhntr/channels v0.2.0
+	github.com/crhntr/channels v0.7.0
 	github.com/typelate/sse v0.2.0
 )
 

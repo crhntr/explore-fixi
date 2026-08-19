@@ -5,6 +5,8 @@ github.com/andybalholm/cascadia v1.3.4/go.mod h1:BLRmbRjpEtNKieZOCCvYj4RqN+KRA41
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
 github.com/crhntr/channels v0.2.0 h1:+zPTuPGR9l/f/uY7XWMUXQmfWGU4qmjtHa5cKolu5sc=
 github.com/crhntr/channels v0.2.0/go.mod h1:yK+Q/VjpsCYUJ8HJFszZpcCfNApRATxc0rfLRwRDcVw=
+github.com/crhntr/channels v0.7.0 h1:f43R5Uq7UcuxpDetZms/WrRHYJ2G8N9N/OcyYHKhxm0=
+github.com/crhntr/channels v0.7.0/go.mod h1:yK+Q/VjpsCYUJ8HJFszZpcCfNApRATxc0rfLRwRDcVw=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/ettle/strcase v0.2.0 h1:fGNiVF21fHXpX1niBgk0aROov1LagYsOwV/xqKDKR/Q=
