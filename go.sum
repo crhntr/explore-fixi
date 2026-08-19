@@ -50,6 +50,8 @@ github.com/typelate/muxt v0.19.10 h1:YM9bN4h0ugidAvBuLYvf5vpiYmKKGIb1e3wXmhLed8U
 github.com/typelate/muxt v0.19.10/go.mod h1:xET3+2qFdOZp7WvNZ8mO4aXd6DesDPa6pj4RtVysQAc=
 github.com/typelate/sse v0.0.1 h1:3cK4aKhCcLy/coOHikPIsKHrUuE0MU4zvx+/fbyt/u0=
 github.com/typelate/sse v0.0.1/go.mod h1:LCLAqprjDKaNS2JVqLHvmeQ2ZchxugcN8RjXE5Wu1pQ=
+github.com/typelate/sse v0.2.0 h1:V4Mxak+FegNnqDT94YWxxI9OvA192gg3bJVWQwReUOI=
+github.com/typelate/sse v0.2.0/go.mod h1:LCLAqprjDKaNS2JVqLHvmeQ2ZchxugcN8RjXE5Wu1pQ=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 go.yaml.in/yaml/v3 v3.0.4 h1:tfq32ie2Jv2UxXFdLJdh3jXuOzWiL1fo0bu/FbuKpbc=
 go.yaml.in/yaml/v3 v3.0.4/go.mod h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=
